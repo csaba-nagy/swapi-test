@@ -1,88 +1,71 @@
 
 const showProfile = async (id) => {
-  const person = await getPersonById(id)
-  console.log('Person:', person)
+  try {
+    const person = await getPersonById(id)
+    console.log('Person:', person)
 
-  const starships = await getStarshipsByPerson(person)
-  console.log('Starships:', starships)
+    const starships = await getStarshipsByPerson(person)
+    console.log('Starships:', starships)
 
-  const movies = await getMoviesByPerson(person)
-  console.log('Movies:', movies)
+    const movies = await getMoviesByPerson(person)
+    console.log('Movies:', movies)
 
-  const vehicles = await getVehiclesByPerson(person)
-  console.log('Vehicles:', vehicles)
+    const vehicles = await getVehiclesByPerson(person)
+    console.log('Vehicles:', vehicles)
+  } catch (error) {
+    console.error(error.message)
+  }
 }
 
-//people, starships, films, vehicles
 const getPersonById = (id) => {
-  const route = new URL(`https://swapi.dev/api/people/${id}`)
+  const route = `https://swapi.dev/api/people/${id}`
 
-  const result = fetchRoute(route)
-
-  return result
+  return fetchRoute(route)
 }
 
-const getStarshipsByPerson = (person) => {
+const getStarshipsByPerson = async (person) => {
   const starshipRoutes = person.starships
 
   if (starshipRoutes.length === 0) {
-    return new Error('No starships here')
+    return `${person.name} does not have starhips`
   }
 
-  const result = []
-
-  starshipRoutes.forEach(element => {
-    const starship = fetchRoute(element)
-    starship.then(value => result.push(value))
-  });
-
-  return result
+  return await Promise.all(starshipRoutes.map(async (route) => await fetchRoute(route)))
 }
 
 const getMoviesByPerson = (person) => {
   const movieRoutes = person.films
 
   if (movieRoutes.length === 0) {
-    return new Error('No movies here')
+    return `${person.name} does not appear in any movies`
   }
 
-  const result = []
-  //TODO: Use an array map function instead
-  movieRoutes.forEach(element => {
-    const movie = fetchRoute(element)
-    movie.then(value => result.push(value))
-  });
-
-  return result
+  return Promise.all(movieRoutes.map(async (route) => await fetchRoute(route)))
 }
 
 const getVehiclesByPerson = (person) => {
   const vehicleRoutes = person.vehicles
 
   if (vehicleRoutes.length === 0) {
-    return new Error('No vehicles here')
+    return `${person.name} does not have vehicles`
   }
 
-  const result = []
-  //TODO: Use an array map function instead
-  vehicleRoutes.forEach(element => {
-    const vehicle = fetchRoute(element)
-    vehicle.then(value => result.push(value))
-  });
-
-  return result
+  return Promise.all(vehicleRoutes.map(async (route) => await fetchRoute(route)))
 }
 
 const fetchRoute = async (route) => {
-  const data = await fetch(route)
+  try {
+    const data = await fetch(route)
 
-  if (!data) {
-    return new Error('400 Bad Request')
+    if (data.status !== 200) {
+      throw new Error('400 Bad Request')
+    }
+
+    return await data.json()
+
+  } catch (error) {
+    console.error(error.message)
   }
-
-  const result = await data.json()
-
-  return result
 }
 
-showProfile(parseInt(prompt('Give me a user ID...')))
+showProfile(1)
