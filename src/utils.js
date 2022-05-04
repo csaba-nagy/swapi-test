@@ -33,5 +33,9 @@ export const useFetchJSON = async (url) => {
 }
 
 export const addContent = (element, content) => {
+  if (!element) {
+    throw new Error('Invalid element')
+  }
+
   element.textContent = content
 }
