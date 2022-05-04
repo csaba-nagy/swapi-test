@@ -1,14 +1,14 @@
-import { LUKE_SKYWALKER_ID, BASE_PATH } from './constants.js'
-import { useFetchJSON } from './utils.js'
+import { BASE_PATH } from './constants.js'
+import { useFetchJSON, useTryCatch } from './utils.js'
 
 export const getPerson = async (id) => {
   const url = `${BASE_PATH}people/${id}`
 
-  const result = await useFetchJSON(url)
+  const { data, error, hasData, hasError } = await useTryCatch(() => useFetchJSON(url))
 
-  if (!result) {
-    throw new Error('Something went wrong')
+  if (hasError) {
+    throw error
   }
 
-  return result
+  return hasData ? data : null
 }
