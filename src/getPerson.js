@@ -12,3 +12,15 @@ export const getPerson = async (id) => {
 
   return hasData ? data : null
 }
+
+export const getAllPerson = async (url, result = []) => {
+  const data = await useFetchJSON(url)
+
+  if (!data.next) {
+    return result
+  }
+
+  data.results.forEach((person) => result.push(person.name))
+
+  return await getAllPerson(data.next, result)
+}
