@@ -7,7 +7,7 @@ const resultElement = document.createElement('div')
 
 useTryCatch(main)
   .then(() => addContent(statusElement, 'STATUS: Done'))
-  .catch(() => addContent(statusElement, 'STATUS: Failure, an error occured'))
+  .catch(() => addContent(statusElement, 'STATUS: Failure, an error occurred'))
 
 async function main() {
 
