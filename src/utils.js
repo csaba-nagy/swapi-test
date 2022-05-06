@@ -39,3 +39,18 @@ export const addContent = (element, content) => {
 
   element.textContent = content
 }
+
+export const createListHTML = (rawData) => {
+  const listHTML = document.createElement('ul')
+
+  rawData.forEach((element) => {
+
+    const listItemElementHTML = document.createElement('li')
+
+    addContent(listItemElementHTML, element)
+
+    listHTML.appendChild(listItemElementHTML)
+  })
+  return listHTML
+}
+

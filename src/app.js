@@ -1,5 +1,7 @@
+import { PEOPLE_PATH } from './constants.js'
 import { getMovies } from './getMovies.js'
-import { useTryCatch, addContent } from './utils.js'
+import { getAllPerson } from './getPerson.js'
+import { useTryCatch, addContent, createListHTML } from './utils.js'
 
 const app = document.querySelector('#app')
 const statusElement = document.createElement('div')
@@ -15,24 +17,28 @@ async function main() {
 
   addContent(statusElement, 'Loading...')
 
-  const { data: movieTitles, error, hasData, hasError } = await useTryCatch(() => getMovies())
+  const movies = await useTryCatch(() => getMovies())
 
-  if (hasError) {
-    throw error
+  if (movies.hasError) {
+    throw movies.error
   }
 
-  if (!hasData) {
+  if (!movies.hasData) {
     return addContent(resultElement, 'No results')
   }
 
-  const filmListElement = document.createElement('ul')
-  movieTitles.sort().forEach((title) => {
-    const filmListItemElement = document.createElement('li')
+  app.appendChild(createListHTML(movies.data.sort()))
 
-    addContent(filmListItemElement, title)
+  const characters = await useTryCatch(() => getAllPerson(PEOPLE_PATH))
 
-    filmListElement.appendChild(filmListItemElement)
-  })
+  if (characters.hasError) {
+    throw characters.error
+  }
 
-  app.appendChild(filmListElement)
+  if (!characters.hasData) {
+    return addContent(resultElement, 'No results')
+  }
+
+  app.appendChild(createListHTML(characters.data))
 }
+
